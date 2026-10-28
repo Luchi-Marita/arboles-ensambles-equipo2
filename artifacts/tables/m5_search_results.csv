@@ -1,0 +1,13 @@
+rank,rmse,std_test_score,config
+1,2.0437061479688143,0.0,bootstrap=False | max_depth=36 | max_features=0.7 | min_samples_leaf=4 | min_samples_split=2 | n_estimators=366
+2,2.0454290524798253,0.0,bootstrap=True | max_depth=28 | max_features=0.5 | min_samples_leaf=4 | min_samples_split=2 | n_estimators=248
+3,2.0476717013231758,0.0,bootstrap=False | max_depth=36 | max_features=0.5 | min_samples_leaf=4 | min_samples_split=10 | n_estimators=287
+4,2.049156056923897,0.0,bootstrap=False | max_depth=36 | max_features=0.7 | min_samples_leaf=8 | min_samples_split=2 | n_estimators=363
+5,2.0514358162885302,0.0,bootstrap=False | max_depth=36 | max_features=0.7 | min_samples_leaf=8 | min_samples_split=20 | n_estimators=374
+6,2.0520502841917794,0.0,bootstrap=True | max_depth=20 | max_features=0.9 | min_samples_leaf=8 | min_samples_split=10 | n_estimators=208
+7,2.0543247022940387,0.0,bootstrap=False | max_depth=20 | max_features=0.7 | min_samples_leaf=12 | min_samples_split=2 | n_estimators=220
+8,2.0544890086301297,0.0,bootstrap=False | max_depth=28 | max_features=0.7 | min_samples_leaf=12 | min_samples_split=20 | n_estimators=287
+9,2.0568894541657845,0.0,bootstrap=True | max_depth=28 | max_features=0.5 | min_samples_leaf=8 | min_samples_split=10 | n_estimators=305
+10,2.056963980337473,0.0,bootstrap=True | max_depth=28 | max_features=0.5 | min_samples_leaf=8 | min_samples_split=2 | n_estimators=360
+11,2.0571817234326586,0.0,bootstrap=True | max_depth=36 | max_features=0.9 | min_samples_leaf=12 | min_samples_split=2 | n_estimators=330
+12,2.0723527359923475,0.0,bootstrap=True | max_depth=20 | max_features=0.5 | min_samples_leaf=20 | min_samples_split=20 | n_estimators=371

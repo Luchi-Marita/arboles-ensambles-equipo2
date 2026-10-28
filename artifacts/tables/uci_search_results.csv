@@ -1,0 +1,15 @@
+rank,mean_test_score,std_test_score,config
+1,0.7255817828601726,0.011633353056161564,auto_class_weights=Balanced | bagging_temperature=0 | depth=5 | iterations=350 | l2_leaf_reg=5 | learning_rate=0.1 | random_strength=1
+2,0.725083267376868,0.015948809761258585,auto_class_weights=Balanced | bagging_temperature=0.5 | depth=4 | iterations=500 | l2_leaf_reg=10 | learning_rate=0.05 | random_strength=0.5
+3,0.7247096783494493,0.008980417261031555,auto_class_weights=Balanced | bagging_temperature=0.5 | depth=5 | iterations=500 | l2_leaf_reg=10 | learning_rate=0.05 | random_strength=1
+4,0.7243852019422291,0.012175454922030548,auto_class_weights=Balanced | bagging_temperature=0 | depth=8 | iterations=500 | l2_leaf_reg=3 | learning_rate=0.03 | random_strength=0.5
+5,0.7237208884032986,0.014579923160690282,auto_class_weights=Balanced | bagging_temperature=0 | depth=4 | iterations=650 | l2_leaf_reg=3 | learning_rate=0.05 | random_strength=1
+6,0.7209616100584686,0.012899657430578842,auto_class_weights=Balanced | bagging_temperature=0 | depth=4 | iterations=250 | l2_leaf_reg=10 | learning_rate=0.05 | random_strength=2
+7,0.7181661708053378,0.016561931587106997,auto_class_weights=Balanced | bagging_temperature=0 | depth=5 | iterations=650 | l2_leaf_reg=5 | learning_rate=0.08 | random_strength=1
+8,0.7109932042076345,0.01308994157716778,auto_class_weights=Balanced | bagging_temperature=1 | depth=4 | iterations=250 | l2_leaf_reg=1 | learning_rate=0.02 | random_strength=1
+9,,,auto_class_weights=None | bagging_temperature=0 | depth=5 | iterations=500 | l2_leaf_reg=10 | learning_rate=0.02 | random_strength=0
+10,,,auto_class_weights=None | bagging_temperature=0 | depth=4 | iterations=350 | l2_leaf_reg=10 | learning_rate=0.03 | random_strength=1
+11,,,auto_class_weights=None | bagging_temperature=1 | depth=6 | iterations=650 | l2_leaf_reg=3 | learning_rate=0.03 | random_strength=1
+12,,,auto_class_weights=None | bagging_temperature=0.5 | depth=3 | iterations=350 | l2_leaf_reg=1 | learning_rate=0.03 | random_strength=0.5
+13,,,auto_class_weights=None | bagging_temperature=0 | depth=5 | iterations=350 | l2_leaf_reg=5 | learning_rate=0.05 | random_strength=0.5
+14,,,auto_class_weights=None | bagging_temperature=0.5 | depth=5 | iterations=500 | l2_leaf_reg=3 | learning_rate=0.08 | random_strength=0.5

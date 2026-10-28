@@ -1,0 +1,702 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Árboles y Ensambles · Extra Trees, AdaBoost y CatBoost</title>
+  <meta name="description" content="Laboratorio interactivo de tres modelos de árboles y ensambles: Extra Trees en retail, AdaBoost en diabetes y CatBoost en abandono universitario.">
+  <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Crect width='32' height='32' rx='7' fill='%230a1928'/%3E%3Cpath d='M16 5v22M16 12l-6 5M16 12l6 5M10 17l-3 5M22 17l3 5' stroke='%235eead4' stroke-width='2' fill='none'/%3E%3C/svg%3E">
+  <link rel="stylesheet" href="assets/css/styles.css">
+</head>
+<body>
+  <div class="scroll-progress" id="scrollProgress"></div>
+
+  <header class="site-nav">
+    <a class="brand" href="#top">
+      <span class="brand-mark" aria-hidden="true">
+        <svg viewBox="0 0 28 28"><path d="M14 3v22M14 9l-7 6M14 9l7 6M7 15l-4 5M21 15l4 5M7 15l4 5M21 15l-4 5" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"/><circle cx="14" cy="9" r="2.3" fill="currentColor"/><circle cx="7" cy="15" r="1.9" fill="currentColor"/><circle cx="21" cy="15" r="1.9" fill="currentColor"/><circle cx="3" cy="20" r="1.6" fill="currentColor"/><circle cx="11" cy="20" r="1.6" fill="currentColor"/><circle cx="17" cy="20" r="1.6" fill="currentColor"/><circle cx="25" cy="20" r="1.6" fill="currentColor"/></svg>
+      </span>
+      <span><strong>Bosque&nbsp;de&nbsp;decisiones</strong><small>Familia 1 · Equipo 2</small></span>
+    </a>
+    <nav class="nav-links" aria-label="Secciones">
+      <a href="#overview">Panorama</a>
+      <a href="#extra">Extra Trees</a>
+      <a href="#adaboost">AdaBoost</a>
+      <a href="#catboost">CatBoost</a>
+      <a href="#compare">Comparativa</a>
+      <a href="#report">Informe</a>
+    </nav>
+    <a class="nav-cta" href="#extra">Abrir laboratorio <span>↘</span></a>
+    <button class="nav-toggle" id="navToggle" aria-label="Abrir menú">☰</button>
+  </header>
+
+  <main id="top">
+    <!-- ================= HERO ================= -->
+    <section class="hero">
+      <div class="hero-grid">
+        <div class="hero-copy">
+          <p class="eyebrow"><span class="dot"></span> Aprendizaje supervisado · modelos de árboles</p>
+          <h1>Aprender<br><em>dividiendo</em> el espacio.</h1>
+          <p class="lede">Tres ensambles, tres decisiones de negocio. Extra Trees para pronosticar demanda, AdaBoost para cribar diabetes y CatBoost para anticipar abandono universitario. Teoría, entrenamiento real y simulación en el navegador.</p>
+          <div class="hero-actions">
+            <a class="btn btn-primary" href="#extra">Explorar los modelos <span>→</span></a>
+            <a class="btn btn-ghost" href="reports/Informe_Tecnico_Arboles_Ensambles.pdf" target="_blank" rel="noopener">Leer informe PDF</a>
+          </div>
+          <div class="hero-meta">
+            <div><strong>3</strong><span>modelos</span></div>
+            <div><strong>3</strong><span>casos reales</span></div>
+            <div><strong>473k</strong><span>registros procesados</span></div>
+            <div><strong>100%</strong><span>reproducible</span></div>
+          </div>
+        </div>
+
+        <div class="hero-visual" aria-label="Resumen visual de resultados">
+          <div class="tree-art" aria-hidden="true">
+            <svg viewBox="0 0 420 360">
+              <defs>
+                <linearGradient id="gA" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#5eead4"/><stop offset="1" stop-color="#0d9488"/></linearGradient>
+                <linearGradient id="gB" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#fcd34d"/><stop offset="1" stop-color="#d97706"/></linearGradient>
+                <linearGradient id="gC" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#c4b5fd"/><stop offset="1" stop-color="#7c3aed"/></linearGradient>
+              </defs>
+              <g class="tree-lines" stroke="#25445a" stroke-width="1.1" fill="none">
+                <path d="M210 52 L120 132 M210 52 L300 132 M120 132 L70 218 M120 132 L170 218 M300 132 L250 218 M300 132 L350 218"/>
+                <path d="M70 218 L44 300 M70 218 L96 300 M170 218 L144 300 M170 218 L196 300 M250 218 L224 300 M250 218 L276 300 M350 218 L324 300 M350 218 L376 300"/>
+              </g>
+              <g class="tree-nodes">
+                <circle cx="210" cy="52" r="25" fill="url(#gA)"/><text x="210" y="58" text-anchor="middle">x₁≤θ</text>
+                <circle cx="120" cy="132" r="19" fill="url(#gB)"/><text x="120" y="137" text-anchor="middle">x₇</text>
+                <circle cx="300" cy="132" r="19" fill="url(#gC)"/><text x="300" y="137" text-anchor="middle">x₂₈</text>
+                <circle cx="70" cy="218" r="14" fill="#0f766e"/><text x="70" y="222" text-anchor="middle">≤</text>
+                <circle cx="170" cy="218" r="14" fill="#d97706"/><text x="170" y="222" text-anchor="middle">&gt;</text>
+                <circle cx="250" cy="218" r="14" fill="#7c3aed"/><text x="250" y="222" text-anchor="middle">≤</text>
+                <circle cx="350" cy="218" r="14" fill="#0d9488"/><text x="350" y="222" text-anchor="middle">&gt;</text>
+              </g>
+              <g class="tree-leaves">
+                <rect x="22" y="292" width="44" height="16" rx="8" fill="#12384a"/><text x="44" y="303" text-anchor="middle">ŷ₁</text>
+                <rect x="74" y="292" width="44" height="16" rx="8" fill="#12384a"/><text x="96" y="303" text-anchor="middle">ŷ₂</text>
+                <rect x="122" y="292" width="44" height="16" rx="8" fill="#12384a"/><text x="144" y="303" text-anchor="middle">ŷ₃</text>
+                <rect x="174" y="292" width="44" height="16" rx="8" fill="#12384a"/><text x="196" y="303" text-anchor="middle">ŷ₄</text>
+                <rect x="202" y="292" width="44" height="16" rx="8" fill="#12384a"/><text x="224" y="303" text-anchor="middle">ŷ₅</text>
+                <rect x="254" y="292" width="44" height="16" rx="8" fill="#12384a"/><text x="276" y="303" text-anchor="middle">ŷ₆</text>
+                <rect x="302" y="292" width="44" height="16" rx="8" fill="#12384a"/><text x="324" y="303" text-anchor="middle">ŷ₇</text>
+                <rect x="354" y="292" width="44" height="16" rx="8" fill="#12384a"/><text x="376" y="303" text-anchor="middle">ŷ₈</text>
+              </g>
+            </svg>
+          </div>
+          <div class="metric-float mf-a">
+            <span class="mf-label">Extra Trees · RMSE</span>
+            <strong>1.998</strong>
+            <span class="mf-sub">R² 0.607 · 800 series</span>
+          </div>
+          <div class="metric-float mf-b">
+            <span class="mf-label">AdaBoost · ROC-AUC</span>
+            <strong>0.821</strong>
+            <span class="mf-sub">recall 0.912 con umbral 0.38</span>
+          </div>
+          <div class="metric-float mf-c">
+            <span class="mf-label">CatBoost · macro-F1</span>
+            <strong>0.693</strong>
+            <span class="mf-sub">AUC-OvR 0.886 · 3 clases</span>
+          </div>
+          <p class="hero-note">Cada punto es una decisión: una rama, un umbral, una probabilidad.</p>
+        </div>
+      </div>
+      <div class="hero-marquee" aria-hidden="true">
+        <span>Gini</span><span>·</span><span>Entropía</span><span>·</span><span>MSE</span><span>·</span><span>Boosting</span><span>·</span><span>Bagging</span><span>·</span><span>Target statistics</span><span>·</span><span>Oblivious trees</span><span>·</span><span>Exponential loss</span>
+      </div>
+    </section>
+
+    <!-- ================= OVERVIEW ================= -->
+    <section class="section" id="overview">
+      <div class="section-head">
+        <div>
+          <p class="eyebrow"><span class="dot"></span> Panorama</p>
+          <h2>Un mismo lenguaje: particiones, pérdidas y votos.</h2>
+        </div>
+        <p class="section-note">Los tres modelos pertenecen a la familia de árboles y ensambles, pero optimizan de forma distinta: promediando árboles muy aleatorios, reponderando errores o ajustando gradientes con estadísticas ordenadas.</p>
+      </div>
+
+      <div class="dataset-cards">
+        <article class="dataset-card">
+          <div class="dc-top"><span class="pill pill-teal">Regresión</span><span class="dc-id">M5 · Walmart</span></div>
+          <h3>Ventas diarias por producto y tienda</h3>
+          <p>800 series (80 por tienda), 500 días y 32 variables de calendario, precio, lags y medias móviles. El objetivo es anticipar unidades vendidas.</p>
+          <div class="dc-stats"><div><strong>400,000</strong><span>filas</span></div><div><strong>32</strong><span>features</span></div><div><strong>28</strong><span>días test</span></div></div>
+        </article>
+        <article class="dataset-card">
+          <div class="dc-top"><span class="pill pill-amber">Clasificación binaria</span><span class="dc-id">CDC · BRFSS 2015</span></div>
+          <h3>Indicadores de salud y diabetes</h3>
+          <p>69,057 encuestas balanceadas con 21 variables demográficas y de estilo de vida; se añaden 4 variables clínicas derivadas.</p>
+          <div class="dc-stats"><div><strong>69,057</strong><span>filas</span></div><div><strong>25</strong><span>features</span></div><div><strong>20%</strong><span>test</span></div></div>
+        </article>
+        <article class="dataset-card">
+          <div class="dc-top"><span class="pill pill-violet">Multiclase</span><span class="dc-id">UCI · Dropout</span></div>
+          <h3>Abandono y éxito académico</h3>
+          <p>4,424 estudiantes, 36 variables originales (18 categóricas) y 3 clases: Dropout, Enrolled y Graduate. Se añaden 3 ratios académicos.</p>
+          <div class="dc-stats"><div><strong>4,424</strong><span>filas</span></div><div><strong>39</strong><span>features</span></div><div><strong>3</strong><span>clases</span></div></div>
+        </article>
+      </div>
+
+      <div class="pipeline">
+        <div class="pipe-step"><span class="pipe-num">01</span><h4>Datos</h4><p>Descarga pública, limpieza, deduplicación y partición temporal o estratificada.</p></div>
+        <div class="pipe-arrow" aria-hidden="true">→</div>
+        <div class="pipe-step"><span class="pipe-num">02</span><h4>Preprocesamiento</h4><p>Lags y ventanas móviles sin fuga; codificación ordinal; escalado solo donde aporta.</p></div>
+        <div class="pipe-arrow" aria-hidden="true">→</div>
+        <div class="pipe-step"><span class="pipe-num">03</span><h4>Búsqueda</h4><p>RandomizedSearchCV con validación temporal o estratificada y 12–14 configuraciones.</p></div>
+        <div class="pipe-arrow" aria-hidden="true">→</div>
+        <div class="pipe-step"><span class="pipe-num">04</span><h4>Entrenamiento</h4><p>Refit sobre train+validación, early stopping en CatBoost y control de overfitting.</p></div>
+        <div class="pipe-arrow" aria-hidden="true">→</div>
+        <div class="pipe-step"><span class="pipe-num">05</span><h4>Evaluación</h4><p>Métricas, intervalos bootstrap, calibración, importancia y exportación web.</p></div>
+      </div>
+    </section>
+
+    <!-- ================= EXTRA TREES ================= -->
+    <section class="section model-section model-extra" id="extra">
+      <div class="model-head">
+        <div class="model-number">01</div>
+        <div class="model-title">
+          <p class="eyebrow"><span class="dot"></span> Ensamble por bagging extremo</p>
+          <h2>Extra Trees</h2>
+          <p class="model-sub">Extremely Randomized Trees · Predicción de ventas minoristas (Walmart M5)</p>
+        </div>
+        <div class="model-kpis">
+          <div class="kpi"><span>RMSE</span><strong>1.998</strong><small>unidades/día</small></div>
+          <div class="kpi"><span>R²</span><strong>0.607</strong><small>test 28 días</small></div>
+          <div class="kpi"><span>vs. naive</span><strong>−28%</strong><small>RMSE</small></div>
+        </div>
+      </div>
+
+      <div class="model-body">
+        <div class="theory-card">
+          <h3>Formulación y criterio</h3>
+          <p>Un Extra Tree es un árbol de regresión que divide el espacio en regiones disjuntas. Cada hoja predice la media de las observaciones que caen en ella:</p>
+          <div class="eq"><span>f<sub>m</sub>(x) = Σ<sub>j=1</sub><sup>J</sup> c<sub>j</sub> · <b>1</b>[x ∈ R<sub>j</sub>], &nbsp; c<sub>j</sub> = (1/|R<sub>j</sub>|) Σ<sub>i∈R<sub>j</sub></sub> y<sub>i</sub></span></div>
+          <p>La partición se elige maximizando la reducción de varianza (equivalente a la reducción de MSE):</p>
+          <div class="eq"><span>ΔI(s) = I(R) − (|R<sub>L</sub>|/|R|) I(R<sub>L</sub>) − (|R<sub>R</sub>|/|R|) I(R<sub>R</sub>), &nbsp; I(R) = (1/|R|) Σ<sub>i∈R</sub>(y<sub>i</sub> − ȳ<sub>R</sub>)<sup>2</sup></span></div>
+          <p>La diferencia clave con Random Forest: en cada nodo se sortean <em>K</em> umbrales aleatorios por variable y se elige el mejor de ellos, sin bootstrap obligatorio. El ensamble promedia <em>M</em> árboles:</p>
+          <div class="eq"><span>h<sub>M</sub>(x) = (1/M) Σ<sub>m=1</sub><sup>M</sup> f<sub>m</sub>(x; Θ<sub>m</sub>)</span></div>
+          <div class="callout">
+            <span class="callout-label">Pérdida</span>
+            <p>MSE: L(y, ŷ) = (y − ŷ)². El minimizador es la esperanza condicional E[y | x], y el promedio de árboles reduce la varianza sin aumentar el sesgo de forma apreciable.</p>
+          </div>
+          <div class="algo">
+            <h4>Algoritmo greedy</h4>
+            <ol>
+              <li>Para cada nodo, seleccionar un subconjunto aleatorio de variables.</li>
+              <li>Sortear K umbrales por variable; evaluar ΔI y quedarse con el mejor par (variable, umbral).</li>
+              <li>Partir y repetir hasta profundidad o tamaño mínimo de hoja.</li>
+              <li>Promediar las predicciones de M árboles independientes.</li>
+            </ol>
+          </div>
+          <div class="tags"><span>Sin escalado</span><span>Robusto a outliers</span><span>Paralelizable</span><span>O(M·n log n)</span></div>
+        </div>
+
+        <div class="replay-card">
+          <div class="card-head"><h3>Replay del entrenamiento</h3><span class="live-dot">validación</span></div>
+          <p class="muted">El modelo se entrenó con 366 árboles. La curva muestra cómo cae el error al acumular árboles; el punto se mueve con el control.</p>
+          <div class="replay-canvas-wrap"><canvas id="replay-extra"></canvas></div>
+          <div class="replay-controls">
+            <button class="icon-btn" id="play-extra" aria-label="Reproducir entrenamiento">▶</button>
+            <input type="range" id="slider-extra" min="0" max="0" value="0" aria-label="Árboles acumulados">
+            <span class="replay-readout" id="readout-extra">—</span>
+          </div>
+          <div class="mini-metrics">
+            <div><span>Mejor configuración</span><strong>min_leaf 4 · max_features 0.7</strong></div>
+            <div><span>CV búsqueda</span><strong>RMSE 2.044</strong></div>
+            <div><span>Test</span><strong>RMSE 1.998</strong></div>
+          </div>
+        </div>
+      </div>
+
+      <div class="results-grid">
+        <figure class="figure wide">
+          <img src="img/extra_series.png" alt="Pronóstico de ventas de tres series de Walmart">
+          <figcaption><b>Fig. 1.</b> Pronóstico de las tres series de mayor volumen en los 28 días de test. La línea oscura es la venta real y la ámbar la predicción.</figcaption>
+        </figure>
+        <figure class="figure">
+          <img src="img/extra_actual_vs_pred.png" alt="Dispersión de valores reales frente a predichos">
+          <figcaption><b>Fig. 2.</b> Real vs. predicho. La nube se concentra en ventas bajas, típicas de demanda intermitente.</figcaption>
+        </figure>
+        <figure class="figure">
+          <img src="img/extra_importance.png" alt="Importancia de características de Extra Trees">
+          <figcaption><b>Fig. 3.</b> Los lags y las medias móviles dominan; el precio y el calendario aportan ajustes finos.</figcaption>
+        </figure>
+        <figure class="figure">
+          <img src="img/extra_pdp2d.png" alt="Superficie de respuesta parcial 2D">
+          <figcaption><b>Fig. 4.</b> Superficie de respuesta (PDP) sobre lag_7 y la media móvil de 28 días: la demanda es casi monótona en ambas.</figcaption>
+        </figure>
+        <figure class="figure">
+          <img src="img/extra_search.png" alt="Resultados de la búsqueda de hiperparámetros">
+          <figcaption><b>Fig. 5.</b> Las 12 configuraciones de RandomizedSearchCV. La mejor combina 366 árboles, profundidad 36 y 70% de variables por split.</figcaption>
+        </figure>
+      </div>
+
+      <div class="simulator sim-extra">
+        <div class="sim-head">
+          <div>
+            <p class="eyebrow"><span class="dot"></span> Simulación interactiva</p>
+            <h3>¿Cuántas unidades venderá mañana?</h3>
+            <p class="muted">Ajusta el contexto de la serie y observa la predicción de un bosque Extra Trees exportado a JavaScript. La banda gris representa ±1 desviación entre árboles.</p>
+          </div>
+          <div class="sim-badge">modelo demo · 44 árboles</div>
+        </div>
+        <div class="sim-grid">
+          <div class="sim-controls" id="sim-extra-controls"></div>
+          <div class="sim-output">
+            <div class="prediction-big">
+              <span>Ventas predichas</span>
+              <strong id="extra-pred">—</strong>
+              <small>unidades / día</small>
+              <div class="uncertainty" id="extra-band">—</div>
+            </div>
+            <div class="gauge"><div class="gauge-fill" id="extra-gauge"></div></div>
+            <div class="sim-chart"><canvas id="extra-curve"></canvas></div>
+            <p class="sim-caption">Curva de sensibilidad: predicción al variar <b>lag_7</b> y mantener el resto del escenario fijo.</p>
+          </div>
+        </div>
+      </div>
+
+      <div class="application">
+        <div class="app-case">
+          <p class="eyebrow"><span class="dot"></span> Caso de uso</p>
+          <h3>Walmart M5: decisiones de inventario con demanda intermitente</h3>
+          <p>M5 contiene 30,490 series de producto-tienda y un calendario de 1,969 días; la extracción usada cubre 1,913 días de ventas. En una muestra estratificada de 800 series, el 59.8% de los días no registra ventas: la distribución es cero-inflada y muy asimétrica. Extra Trees maneja bien esa mezcla porque no impone linealidad, tolera picos y reduce varianza promediando árboles.</p>
+          <p>El valor operativo está en el error absoluto: con MAE = 0.990 unidades/día, un gerente puede dimensionar reposición y seguridad de stock por producto. El baseline estacional (lag_7) obtiene RMSE 2.776; el ensamble lo reduce a 1.998, un 28% menos. El R² de 0.607 es comparable al reportado en la literatura para M5 (R² ≈ 0.585), aunque la muestra y la ventana no son idénticas.</p>
+          <ul class="checklist">
+            <li><b>Por qué Extra Trees:</b> 400k filas, 32 variables, interacciones no lineales y ruido; entrena en minutos y paraleliza.</li>
+            <li><b>Interpretabilidad:</b> importancia por impureza y PDP; suficiente para explicar drivers, no para auditoría individual.</li>
+            <li><b>Límite:</b> no extrapola tendencias fuera del rango histórico y puede suavizar picos extremos.</li>
+          </ul>
+        </div>
+        <aside class="app-aside">
+          <h4>Números del caso</h4>
+          <div class="stat-line"><span>MAE</span><strong>0.990</strong></div>
+          <div class="stat-line"><span>WAPE</span><strong>70.2%</strong></div>
+          <div class="stat-line"><span>Sesgo medio</span><strong>−0.049</strong></div>
+          <div class="stat-line"><span>Mejora vs. naive</span><strong>28.0%</strong></div>
+          <p class="tiny">WAPE alto porque la demanda tiene muchos ceros; por eso se prioriza MAE/RMSE y no MAPE.</p>
+        </aside>
+      </div>
+    </section>
+
+    <!-- ================= ADABOOST ================= -->
+    <section class="section model-section model-ada" id="adaboost">
+      <div class="model-head">
+        <div class="model-number">02</div>
+        <div class="model-title">
+          <p class="eyebrow"><span class="dot"></span> Ensamble por boosting adaptativo</p>
+          <h2>AdaBoost</h2>
+          <p class="model-sub">Adaptive Boosting · Predicción de diabetes (CDC BRFSS 2015)</p>
+        </div>
+        <div class="model-kpis">
+          <div class="kpi"><span>ROC-AUC</span><strong>0.821</strong><small>IC 95% [0.815, 0.828]</small></div>
+          <div class="kpi"><span>F1</span><strong>0.758</strong><small>umbral 0.50</small></div>
+          <div class="kpi"><span>Recall</span><strong>0.912</strong><small>umbral 0.38</small></div>
+        </div>
+      </div>
+
+      <div class="model-body">
+        <div class="theory-card">
+          <h3>Formulación y criterio</h3>
+          <p>AdaBoost construye un clasificador fuerte como combinación lineal de clasificadores débiles. Para etiquetas y ∈ {−1, +1}:</p>
+          <div class="eq"><span>H<sub>T</sub>(x) = sign( f<sub>T</sub>(x) ), &nbsp; f<sub>T</sub>(x) = Σ<sub>t=1</sub><sup>T</sup> α<sub>t</sub> h<sub>t</sub>(x)</span></div>
+          <p>En cada ronda se entrena h<sub>t</sub> sobre una distribución de pesos w<sub>i</sub>. El error ponderado y su peso son:</p>
+          <div class="eq"><span>ε<sub>t</sub> = Σ<sub>i</sub> w<sub>i</sub> <b>1</b>[h<sub>t</sub>(x<sub>i</sub>) ≠ y<sub>i</sub>], &nbsp; α<sub>t</sub> = ½ ln((1 − ε<sub>t</sub>)/ε<sub>t</sub>)</span></div>
+          <p>Los pesos se actualizan para castigar los errores y se normalizan:</p>
+          <div class="eq"><span>w<sub>i</sub><sup>(t+1)</sup> ∝ w<sub>i</sub><sup>(t)</sup> exp(−α<sub>t</sub> y<sub>i</sub> h<sub>t</sub>(x<sub>i</sub>))</span></div>
+          <div class="callout">
+            <span class="callout-label">Pérdida</span>
+            <p>Pérdida exponencial: L(y, f) = exp(−y f(x)). AdaBoost es un descenso por coordenadas en el espacio de funciones que la minimiza de forma forward-stagewise.</p>
+          </div>
+          <p>Si cada débil tiene margen γ (ε<sub>t</sub> ≤ ½ − γ), el error de entrenamiento está acotado por exp(−2Tγ²): el ensamble se vuelve más seguro al añadir rondas, sin sobreajustar necesariamente.</p>
+          <div class="algo">
+            <h4>Algoritmo forward-stagewise</h4>
+            <ol>
+              <li>Inicializar w<sub>i</sub> = 1/n.</li>
+              <li>Entrenar h<sub>t</sub> con los pesos actuales y calcular ε<sub>t</sub>.</li>
+              <li>Asignar α<sub>t</sub> y actualizar los pesos; normalizar.</li>
+              <li>Repetir T rondas y votar con peso α<sub>t</sub>.</li>
+            </ol>
+          </div>
+          <div class="tags"><span>Pérdida exponencial</span><span>Sensible al ruido</span><span>Débil = árbol de profundidad 3</span><span>Probabilidades no calibradas</span></div>
+        </div>
+
+        <div class="replay-card">
+          <div class="card-head"><h3>Replay del entrenamiento</h3><span class="live-dot live-amber">test</span></div>
+          <p class="muted">370 estimadores débiles. La curva muestra AUC, F1 y accuracy; el umbral de decisión se fijó en 0.38 para priorizar recall en cribado.</p>
+          <div class="replay-canvas-wrap"><canvas id="replay-ada"></canvas></div>
+          <div class="replay-controls">
+            <button class="icon-btn" id="play-ada" aria-label="Reproducir entrenamiento">▶</button>
+            <input type="range" id="slider-ada" min="0" max="0" value="0" aria-label="Estimadores acumulados">
+            <span class="replay-readout" id="readout-ada">—</span>
+          </div>
+          <div class="mini-metrics">
+            <div><span>Mejor configuración</span><strong>370 · lr 0.10 · depth 3</strong></div>
+            <div><span>CV AUC</span><strong>0.822</strong></div>
+            <div><span>Test AUC</span><strong>0.821</strong></div>
+          </div>
+        </div>
+      </div>
+
+      <div class="results-grid">
+        <figure class="figure">
+          <img src="img/ada_roc.png" alt="Curva ROC de AdaBoost">
+          <figcaption><b>Fig. 6.</b> ROC en test. Un AUC de 0.821 indica buena separación entre personas con y sin diabetes.</figcaption>
+        </figure>
+        <figure class="figure">
+          <img src="img/ada_confusion.png" alt="Matriz de confusión de AdaBoost">
+          <figcaption><b>Fig. 7.</b> Matriz de confusión con umbral 0.38: se prioriza no dejar casos positivos sin detectar.</figcaption>
+        </figure>
+        <figure class="figure">
+          <img src="img/ada_importance.png" alt="Importancia de variables de AdaBoost">
+          <figcaption><b>Fig. 8.</b> Salud general, edad, comorbilidad y BMI concentran la señal; los hábitos aportan información incremental.</figcaption>
+        </figure>
+        <figure class="figure">
+          <img src="img/ada_thresholds.png" alt="Compromiso entre precisión y recall">
+          <figcaption><b>Fig. 9.</b> Barrido de umbral. Bajar de 0.50 a 0.38 eleva el recall de 0.780 a 0.912 a costa de precisión.</figcaption>
+        </figure>
+        <figure class="figure">
+          <img src="img/ada_calibration.png" alt="Curva de calibración de AdaBoost">
+          <figcaption><b>Fig. 10.</b> Calibración: las probabilidades son razonables pero no perfectas; para uso clínico conviene recalibrar.</figcaption>
+        </figure>
+        <figure class="figure">
+          <img src="img/ada_boundary.png" alt="Frontera de decisión 2D de AdaBoost">
+          <figcaption><b>Fig. 11.</b> Frontera de decisión sobre las dos variables más importantes, con el resto en su mediana.</figcaption>
+        </figure>
+      </div>
+
+      <div class="simulator sim-ada">
+        <div class="sim-head">
+          <div>
+            <p class="eyebrow"><span class="dot"></span> Simulación interactiva</p>
+            <h3>Calculadora de riesgo de diabetes</h3>
+            <p class="muted">Modifica el perfil y observa la probabilidad del ensamble AdaBoost real exportado a JavaScript, junto con los votos que más empujan la decisión.</p>
+          </div>
+          <div class="sim-badge sim-badge-amber">370 árboles · umbral 0.38</div>
+        </div>
+        <div class="sim-grid">
+          <div class="sim-controls sim-controls-ada" id="sim-ada-controls"></div>
+          <div class="sim-output">
+            <div class="prediction-big">
+              <span>Probabilidad de diabetes</span>
+              <strong id="ada-pred">—</strong>
+              <small id="ada-risk-label">riesgo —</small>
+              <div class="risk-meter"><div id="ada-meter"></div></div>
+            </div>
+            <div class="driver-list" id="ada-drivers"></div>
+            <div class="sim-chart sim-chart-short"><canvas id="ada-curve"></canvas></div>
+            <p class="sim-caption">Sensibilidad al IMC manteniendo el resto del perfil. La línea punteada marca el umbral 0.38.</p>
+          </div>
+        </div>
+      </div>
+
+      <div class="application">
+        <div class="app-case">
+          <p class="eyebrow"><span class="dot"></span> Caso de uso</p>
+          <h3>CDC BRFSS: cribado poblacional con recall alto</h3>
+          <p>El conjunto contiene 253,680 respuestas originales; se usa la versión balanceada de 70,692 registros (50/50) y se eliminan 1,635 duplicados. La variable objetivo es el diagnóstico de diabetes o prediabetes. En salud pública, el costo de un falso negativo (no derivar a una persona enferma) es mucho mayor que el de un falso positivo (prueba adicional), por lo que el umbral se baja a 0.38: recall 0.912 y precisión 0.670.</p>
+          <p>AdaBoost es adecuado porque concentra capacidad en los casos difíciles: cada ronda repondera los errores. Con árboles de profundidad 3 captura interacciones clínicas sin exigir escalado ni imputación compleja. Su debilidad es la sensibilidad a etiquetas ruidosas y la calibración imperfecta; por eso se reporta Brier = 0.178 y se recomienda recalibrar antes de comunicar probabilidades individuales.</p>
+          <ul class="checklist">
+            <li><b>Valor diferencial:</b> modelo ligero (600 KB), entrenamiento en segundos y reglas interpretables por ronda.</li>
+            <li><b>Uso responsable:</b> no es diagnóstico; es una herramienta de priorización que debe acompañarse de confirmación clínica.</li>
+            <li><b>Sesgo:</b> la encuesta autodeclarada y el desbalance original pueden infrarepresentar grupos; auditar por subgrupos.</li>
+          </ul>
+        </div>
+        <aside class="app-aside">
+          <h4>Números del caso</h4>
+          <div class="stat-line"><span>AUC</span><strong>0.821</strong></div>
+          <div class="stat-line"><span>Recall @0.38</span><strong>0.912</strong></div>
+          <div class="stat-line"><span>Precisión @0.38</span><strong>0.670</strong></div>
+          <div class="stat-line"><span>Brier</span><strong>0.178</strong></div>
+          <p class="tiny">El umbral se eligió en un 15% de entrenamiento, nunca en test.</p>
+        </aside>
+      </div>
+    </section>
+
+    <!-- ================= CATBOOST ================= -->
+    <section class="section model-section model-cat" id="catboost">
+      <div class="model-head">
+        <div class="model-number">03</div>
+        <div class="model-title">
+          <p class="eyebrow"><span class="dot"></span> Gradient boosting con categóricas nativas</p>
+          <h2>CatBoost</h2>
+          <p class="model-sub">Categorical Boosting · Predicción de abandono universitario (UCI)</p>
+        </div>
+        <div class="model-kpis">
+          <div class="kpi"><span>Macro-F1</span><strong>0.693</strong><small>3 clases</small></div>
+          <div class="kpi"><span>AUC-OvR</span><strong>0.886</strong><small>IC 95% accuracy [0.704, 0.757]</small></div>
+          <div class="kpi"><span>Recall Dropout</span><strong>0.694</strong><small>172 árboles</small></div>
+        </div>
+      </div>
+
+      <div class="model-body">
+        <div class="theory-card">
+          <h3>Formulación y criterio</h3>
+          <p>CatBoost es un gradient boosting que construye un modelo aditivo. Para clasificación multiclase con softmax:</p>
+          <div class="eq"><span>F<sub>m</sub>(x) = F<sub>m−1</sub>(x) + ν · h<sub>m</sub>(x), &nbsp; p<sub>k</sub>(x) = exp(F<sub>k</sub>(x)) / Σ<sub>j</sub> exp(F<sub>j</sub>(x))</span></div>
+          <p>La pérdida es entropía cruzada multiclase:</p>
+          <div class="eq"><span>L = −Σ<sub>i</sub> Σ<sub>k</sub> y<sub>ik</sub> ln p<sub>ik</sub>, &nbsp; g<sub>ik</sub> = p<sub>ik</sub> − y<sub>ik</sub>, &nbsp; h<sub>ik</sub> = p<sub>ik</sub>(1 − p<sub>ik</sub>)</span></div>
+          <p>Cada hoja recibe el valor Newton que minimiza la aproximación cuadrática local:</p>
+          <div class="eq"><span>w<sub>j</sub><sup>*</sup> = − (Σ<sub>i∈R<sub>j</sub></sub> g<sub>i</sub>) / (Σ<sub>i∈R<sub>j</sub></sub> h<sub>i</sub> + λ)</span></div>
+          <div class="callout">
+            <span class="callout-label">Innovación categórica</span>
+            <p>Para una categórica k, CatBoost reemplaza la categoría por una estadística objetivo calculada con una permutación aleatoria y solo con ejemplos anteriores: x̂<sub>i,k</sub> = (Σ<sub>j: σ(j)&lt;σ(i)</sub> y<sub>j</sub> + a p) / (N<sub>i,k</sub> + a). Así evita el target leakage típico del target encoding clásico.</p>
+          </div>
+          <p>Los árboles son <em>oblivious</em>: el mismo split se usa en todo un nivel. Esto reduce el sobreajuste, acelera la inferencia y permite importancias estables. El boosting combina muchos árboles pequeños con regularización L2 y shrinkage ν.</p>
+          <div class="algo">
+            <h4>Algoritmo de boosting</h4>
+            <ol>
+              <li>Inicializar F<sub>0</sub> con el prior de clases.</li>
+              <li>Calcular gradientes y hessianos de la pérdida.</li>
+              <li>Ajustar un árbol oblivioso a las estadísticas ordenadas de categóricas.</li>
+              <li>Asignar valores de hoja por Newton y actualizar F con tasa ν.</li>
+              <li>Repetir con early stopping sobre validación.</li>
+            </ol>
+          </div>
+          <div class="tags"><span>Categóricas nativas</span><span>Ordered boosting</span><span>Oblivious trees</span><span>Early stopping</span></div>
+        </div>
+
+        <div class="replay-card">
+          <div class="card-head"><h3>Replay del entrenamiento</h3><span class="live-dot live-violet">test</span></div>
+          <p class="muted">El mejor modelo usó 172 iteraciones tras early stopping (350 configuradas). La curva muestra F1 macro, accuracy y log-loss.</p>
+          <div class="replay-canvas-wrap"><canvas id="replay-cat"></canvas></div>
+          <div class="replay-controls">
+            <button class="icon-btn" id="play-cat" aria-label="Reproducir entrenamiento">▶</button>
+            <input type="range" id="slider-cat" min="0" max="0" value="0" aria-label="Iteraciones acumuladas">
+            <span class="replay-readout" id="readout-cat">—</span>
+          </div>
+          <div class="mini-metrics">
+            <div><span>Mejor configuración</span><strong>depth 5 · lr 0.10 · Balanced</strong></div>
+            <div><span>CV macro-F1</span><strong>0.726</strong></div>
+            <div><span>Test macro-F1</span><strong>0.693</strong></div>
+          </div>
+        </div>
+      </div>
+
+      <div class="results-grid">
+        <figure class="figure">
+          <img src="img/cat_confusion.png" alt="Matriz de confusión de CatBoost">
+          <figcaption><b>Fig. 12.</b> Matriz de confusión 3×3. La clase Enrolled es la más difícil: comparte frontera con Dropout y Graduate.</figcaption>
+        </figure>
+        <figure class="figure">
+          <img src="img/cat_per_class.png" alt="Métricas por clase de CatBoost">
+          <figcaption><b>Fig. 13.</b> Precisión, recall y F1 por clase. Dropout y Graduate superan 0.74 de F1; Enrolled queda en 0.50.</figcaption>
+        </figure>
+        <figure class="figure">
+          <img src="img/cat_importance.png" alt="Importancia de variables de CatBoost">
+          <figcaption><b>Fig. 14.</b> Unidades aprobadas del segundo semestre, matrícula al día y rendimiento previo dominan la predicción.</figcaption>
+        </figure>
+        <figure class="figure">
+          <img src="img/cat_roc.png" alt="Curvas ROC one-vs-rest de CatBoost">
+          <figcaption><b>Fig. 15.</b> ROC one-vs-rest por clase; Graduate es la más separable, Enrolled la más ambigua.</figcaption>
+        </figure>
+        <figure class="figure">
+          <img src="img/cat_boundary.png" alt="Superficie de riesgo de abandono">
+          <figcaption><b>Fig. 16.</b> Superficie P(Dropout) sobre las dos variables numéricas más importantes, con el resto en su mediana.</figcaption>
+        </figure>
+        <figure class="figure">
+          <img src="img/cat_calibration.png" alt="Calibración de la clase Dropout">
+          <figcaption><b>Fig. 17.</b> Calibración de la probabilidad de abandono; útil para priorizar tutorías, no para decisiones automáticas.</figcaption>
+        </figure>
+      </div>
+
+      <div class="simulator sim-cat">
+        <div class="sim-head">
+          <div>
+            <p class="eyebrow"><span class="dot"></span> Simulación interactiva</p>
+            <h3>Perfil de estudiante y riesgo de abandono</h3>
+            <p class="muted">Cambia la trayectoria académica y el contexto. El modelo demo exportado replica las probabilidades de CatBoost con one-hot encoding.</p>
+          </div>
+          <div class="sim-badge sim-badge-violet">344 árboles oblivios · demo</div>
+        </div>
+        <div class="sim-grid">
+          <div class="sim-controls sim-controls-cat" id="sim-cat-controls"></div>
+          <div class="sim-output">
+            <div class="cat-prediction">
+              <span>Clase predicha</span>
+              <strong id="cat-pred">—</strong>
+              <small id="cat-risk">riesgo —</small>
+            </div>
+            <div class="prob-bars" id="cat-bars"></div>
+            <div class="importance-mini" id="cat-importance"></div>
+            <p class="sim-caption">Barras = probabilidad softmax del modelo demo. La clase Enrolled es estructuralmente la más difícil de separar.</p>
+          </div>
+        </div>
+      </div>
+
+      <div class="application">
+        <div class="app-case">
+          <p class="eyebrow"><span class="dot"></span> Caso de uso</p>
+          <h3>UCI: intervención temprana contra el abandono universitario</h3>
+          <p>El dataset reúne 4,424 estudiantes de diversas carreras con 36 variables: estado civil, modo de solicitud, curso, cualificaciones y ocupaciones de los padres, becas, deudas, notas y unidades aprobadas. 18 variables son categóricas y muchas tienen alta cardinalidad (Course, Application_mode, qualifications). CatBoost las trata nativamente con estadísticas objetivo ordenadas, sin explosión de columnas ni fuga de información.</p>
+          <p>El modelo distingue tres estados. La clase Dropout alcanza F1 = 0.745 y recall = 0.694; Graduate, F1 = 0.830. Enrolled es la clase más ambigua (F1 = 0.503) porque es un estado intermedio y transitorio. Para intervención, lo relevante es la probabilidad de Dropout: permite ordenar estudiantes y asignar tutorías, becas o acompañamiento con presupuesto limitado.</p>
+          <ul class="checklist">
+            <li><b>Por qué CatBoost:</b> 18 categóricas, solo 4.4k filas, multiclase y necesidad de robustez; ordered TS evita leakage.</li>
+            <li><b>Interpretabilidad:</b> importancia y superficies de riesgo; se puede explicar qué variables empujan la alerta.</li>
+            <li><b>Ética:</b> una predicción de abandono no debe estigmatizar; usar como apoyo, con revisión humana y auditoría de sesgos.</li>
+          </ul>
+        </div>
+        <aside class="app-aside">
+          <h4>Números del caso</h4>
+          <div class="stat-line"><span>Accuracy</span><strong>0.731</strong></div>
+          <div class="stat-line"><span>Macro-F1</span><strong>0.693</strong></div>
+          <div class="stat-line"><span>AUC-OvR</span><strong>0.886</strong></div>
+          <div class="stat-line"><span>F1 Dropout</span><strong>0.745</strong></div>
+          <p class="tiny">El modelo se entrenó con class weights balanceados y early stopping.</p>
+        </aside>
+      </div>
+    </section>
+
+    <!-- ================= COMPARISON ================= -->
+    <section class="section" id="compare">
+      <div class="section-head">
+        <div>
+          <p class="eyebrow"><span class="dot"></span> Lectura comparativa</p>
+          <h2>Tres estrategias, un mismo sesgo inductivo.</h2>
+        </div>
+        <p class="section-note">No hay un ganador universal: la elección depende del tipo de dato, del costo del error, de la cardinalidad de las categóricas y de cuánta interpretabilidad exige el dominio.</p>
+      </div>
+
+      <div class="compare-grid">
+        <div class="compare-table-wrap">
+          <table class="compare-table">
+            <thead>
+              <tr><th>Criterio</th><th class="th-extra">Extra Trees</th><th class="th-ada">AdaBoost</th><th class="th-cat">CatBoost</th></tr>
+            </thead>
+            <tbody>
+              <tr><td>Mecanismo</td><td>Bagging extremo + splits aleatorios</td><td>Boosting adaptativo por reponderación</td><td>Gradient boosting con árboles oblivios</td></tr>
+              <tr><td>Pérdida</td><td>MSE</td><td>Exponencial</td><td>Entropía cruzada + L2</td></tr>
+              <tr><td>Optimización</td><td>Greedy sobre splits aleatorios</td><td>Forward stagewise / coordenadas</td><td>Newton por hoja + gradiente</td></tr>
+              <tr><td>Categóricas</td><td>Ordinal / one-hot manual</td><td>Ordinal / one-hot manual</td><td>Nativas (ordered target statistics)</td></tr>
+              <tr><td>Escalado</td><td>Innecesario</td><td>Innecesario (árboles), aplicado en pipeline</td><td>No requerido</td></tr>
+              <tr><td>Outliers</td><td>Muy robusto</td><td>Sensible (pérdida exponencial)</td><td>Robusto con regularización</td></tr>
+              <tr><td>Interpretabilidad</td><td>Media (importancia/PDP)</td><td>Media-alta (débiles simples)</td><td>Media (importancia/SHAP)</td></tr>
+              <tr><td>Costo de cómputo</td><td>Bajo y paralelo</td><td>Muy bajo</td><td>Medio; más caro de tunear</td></tr>
+              <tr><td>Riesgo principal</td><td>Suaviza picos; no extrapola</td><td>Ruido y calibración</td><td>Más hiperparámetros y costo</td></tr>
+              <tr><td>Mejor escenario</td><td>Tabular grande, ruidoso, regresión</td><td>Tabular pequeño, cribado, Boost rápido</td><td>Muchas categóricas, multiclase, datos pequeños</td></tr>
+            </tbody>
+          </table>
+        </div>
+        <div class="radar-card">
+          <h3>Perfil cualitativo</h3>
+          <p class="muted">Escala 1–5 construida a partir de la evidencia de los experimentos y de la literatura. No sustituye una validación específica del dominio.</p>
+          <div class="radar-wrap"><canvas id="radar"></canvas></div>
+          <div class="radar-legend">
+            <span><i class="dot-teal"></i>Extra Trees</span>
+            <span><i class="dot-amber"></i>AdaBoost</span>
+            <span><i class="dot-violet"></i>CatBoost</span>
+          </div>
+        </div>
+      </div>
+
+      <div class="decision-grid">
+        <article class="decision-card">
+          <span class="decision-icon">⌁</span>
+          <h3>Elige Extra Trees si…</h3>
+          <p>tienes cientos de miles de filas, features numéricas ruidosas, demanda intermitente y necesitas entrenar rápido y en paralelo. Es el más tolerante a outliers y el que menos preprocesamiento exige.</p>
+        </article>
+        <article class="decision-card">
+          <span class="decision-icon">↻</span>
+          <h3>Elige AdaBoost si…</h3>
+          <p>el dataset es pequeño o mediano, necesitas un baseline fuerte en minutos y el costo del falso negativo es alto. Ajusta el umbral y recalibra si vas a comunicar probabilidades.</p>
+        </article>
+        <article class="decision-card">
+          <span class="decision-icon">◈</span>
+          <h3>Elige CatBoost si…</h3>
+          <p>hay muchas categóricas de alta cardinalidad, clases múltiples y pocas filas. El ordered target statistics evita leakage y suele ganar sin ingeniería de categóricas.</p>
+        </article>
+      </div>
+
+      <div class="lessons">
+        <h3>Lo que dicen los números</h3>
+        <div class="lesson-grid">
+          <div><strong>1.998</strong><span>RMSE de Extra Trees en M5, 28% mejor que el naive estacional.</span></div>
+          <div><strong>0.912</strong><span>Recall de AdaBoost con umbral 0.38: el costo se desplaza hacia falsos positivos.</span></div>
+          <div><strong>0.886</strong><span>AUC-OvR de CatBoost: buena separación global, pero Enrolled sigue siendo ambiguo.</span></div>
+          <div><strong>172</strong><span>Árboles efectivos de CatBoost tras early stopping, muy por debajo de los 350 configurados.</span></div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ================= CONCLUSIONS ================= -->
+    <section class="section" id="conclusions">
+      <div class="section-head">
+        <div>
+          <p class="eyebrow"><span class="dot"></span> Cierre</p>
+          <h2>Conclusiones y límites.</h2>
+        </div>
+      </div>
+      <div class="conclusion-grid">
+        <div class="conclusion-main">
+          <p>Los tres modelos confirman que los ensambles de árboles siguen siendo una línea base formidable para datos tabulares. Extra Trees demuestra que la aleatoriedad controlada es una forma barata de reducir varianza; AdaBoost, que reponderar errores convierte reglas débiles en un cribado útil; CatBoost, que el tratamiento nativo de categóricas resuelve un cuello de botella real en educación y salud.</p>
+          <p>La comparación no es de “mejor modelo” sino de <em>mejor ajuste</em>: el mismo algoritmo que brilla en M5 no sería la primera opción para 4,424 estudiantes con 18 categóricas, y CatBoost sería excesivo para un baseline de 70k filas numéricas. La métrica también cambia con el costo del error: RMSE y MAE para inventario; recall y calibración para salud; macro-F1 y F1 de Dropout para educación.</p>
+          <p>Quedan límites: la muestra de M5 no cubre las 30,490 series; el umbral de AdaBoost se eligió en una partición pequeña; CatBoost tiene solo 885 estudiantes en test. Los intervalos bootstrap y la validación temporal/estratificada acotan la incertidumbre, pero no la eliminan. La reproducibilidad está garantizada por el repositorio, las semillas fijas y los scripts de descarga y entrenamiento.</p>
+        </div>
+        <div class="conclusion-aside">
+          <h3>Checklist de rigor</h3>
+          <ul>
+            <li>Partición temporal en M5 (sin fuga de futuro).</li>
+            <li>Estadísticas históricas calculadas solo antes de la ventana modelada.</li>
+            <li>Umbral de AdaBoost elegido fuera de test.</li>
+            <li>Early stopping de CatBoost con validación interna.</li>
+            <li>Intervalos bootstrap para RMSE, R², AUC y F1.</li>
+            <li>Semilla 42 y versiones fijadas en <code>requirements.txt</code>.</li>
+          </ul>
+        </div>
+      </div>
+    </section>
+
+    <!-- ================= REPORT ================= -->
+    <section class="section" id="report">
+      <div class="report-card">
+        <div>
+          <p class="eyebrow"><span class="dot"></span> Entregables</p>
+          <h2>Informe técnico, código y simulación.</h2>
+          <p>El informe desarrolla la formulación matemática, el diseño experimental, los resultados y el análisis crítico de aplicaciones. El repositorio incluye el pipeline completo en Python, los artefactos de entrenamiento y esta simulación estática.</p>
+          <div class="report-actions">
+            <a class="btn btn-primary" href="reports/Informe_Tecnico_Arboles_Ensambles.pdf" target="_blank" rel="noopener">PDF del informe</a>
+            <a class="btn btn-ghost" href="reports/Informe_Tecnico_Arboles_Ensambles.docx" download>Word editable</a>
+            <a class="btn btn-ghost" href="https://github.com/Luchi-Marita/arboles-ensambles-equipo2" target="_blank" rel="noopener">GitHub ↗</a>
+          </div>
+        </div>
+        <div class="report-files">
+          <div class="file-row"><span>📄</span><div><strong>Informe_Tecnico_Arboles_Ensambles.pdf</strong><small>Documento técnico completo</small></div></div>
+          <div class="file-row"><span>📝</span><div><strong>Informe_Tecnico_Arboles_Ensambles.docx</strong><small>Versión editable</small></div></div>
+          <div class="file-row"><span>🐍</span><div><strong>src/</strong><small>Datos, modelos, tuning, evaluación y exportación</small></div></div>
+          <div class="file-row"><span>🌐</span><div><strong>docs/</strong><small>Dashboard interactivo y modelos exportados</small></div></div>
+        </div>
+      </div>
+
+      <div class="repro">
+        <h3>Reproducir en 5 comandos</h3>
+        <pre><code>git clone https://github.com/Luchi-Marita/arboles-ensambles-equipo2.git
+cd arboles-ensambles-equipo2
+pip install -r requirements.txt
+python scripts/download_data.py
+python run_all.py</code></pre>
+        <p class="muted">M5 requiere una cuenta de Kaggle; CDC y UCI se descargan automáticamente. Las rutas y semillas están centralizadas en <code>src/config.py</code>.</p>
+      </div>
+    </section>
+  </main>
+
+  <footer class="site-footer">
+    <div class="footer-brand">
+      <span class="brand-mark">▲</span>
+      <div><strong>Bosque de decisiones</strong><small>Familia 1 · Árboles y Ensambles · Equipo 2</small></div>
+    </div>
+    <div class="footer-meta">
+      <span>Datos: Walmart M5 · CDC BRFSS 2015 · UCI Student Dropout</span>
+      <span>Construido con Python, scikit-learn, CatBoost y Chart.js</span>
+    </div>
+  </footer>
+
+  <div class="lightbox" id="lightbox" aria-hidden="true">
+    <button class="lightbox-close" id="lightboxClose" aria-label="Cerrar">×</button>
+    <img id="lightboxImg" alt="Figura ampliada">
+    <p id="lightboxCaption"></p>
+  </div>
+
+  <script src="assets/js/chart.umd.min.js"></script>
+  <script src="assets/js/app.js"></script>
+</body>
+</html>

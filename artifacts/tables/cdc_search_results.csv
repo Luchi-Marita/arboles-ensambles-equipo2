@@ -1,0 +1,15 @@
+rank,mean_test_score,std_test_score,config
+1,0.8219327127259692,0.0030288715040322754,max_depth=3 | min_samples_leaf=20 | learning_rate=0.1 | n_estimators=370
+2,0.8219152830652647,0.0031532492231331087,max_depth=4 | min_samples_leaf=10 | learning_rate=0.08 | n_estimators=419
+3,0.8218672215915603,0.003322338354495997,max_depth=4 | min_samples_leaf=20 | learning_rate=0.08 | n_estimators=370
+4,0.8213711761466173,0.0034104525541969566,max_depth=4 | min_samples_leaf=20 | learning_rate=0.05 | n_estimators=249
+5,0.8213499182338468,0.0034097348681349287,max_depth=3 | min_samples_leaf=10 | learning_rate=0.1 | n_estimators=199
+6,0.8209813615083604,0.003614076682677201,max_depth=3 | min_samples_leaf=5 | learning_rate=0.05 | n_estimators=314
+7,0.8209448520053356,0.002689244655844553,max_depth=2 | min_samples_leaf=5 | learning_rate=0.4 | n_estimators=150
+8,0.8207908473838318,0.004163392257650535,max_depth=2 | min_samples_leaf=20 | learning_rate=0.08 | n_estimators=376
+9,0.8201701866914609,0.003738871903776964,max_depth=3 | min_samples_leaf=20 | learning_rate=0.1 | n_estimators=120
+10,0.8200096358702936,0.0031492900613507985,max_depth=3 | min_samples_leaf=10 | learning_rate=0.4 | n_estimators=269
+11,0.8165064752441809,0.004817318541838013,max_depth=1 | min_samples_leaf=10 | learning_rate=0.1 | n_estimators=406
+12,0.8155657281075704,0.005041366331341355,max_depth=1 | min_samples_leaf=5 | learning_rate=0.08 | n_estimators=393
+13,0.8041527426785144,0.006216281238449129,max_depth=1 | min_samples_leaf=20 | learning_rate=0.03 | n_estimators=121
+14,0.7929979185952906,0.005638909360297047,max_depth=1 | min_samples_leaf=20 | learning_rate=0.01 | n_estimators=148
